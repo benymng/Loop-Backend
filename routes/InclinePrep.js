@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const Events = require("../models/Events");
+const { response } = require("express");
 
 // fetch all the events
 router.get("/events", async (req, res) => {
@@ -10,7 +11,7 @@ router.get("/events", async (req, res) => {
 
 // fetch a single event based on the id
 router.get("/oneEvent/:id", async (req, res) => {
-  const event = await Event.findOne({ id: req.params.id });
+  const event = await Events.findOne({ id: req.params.id });
   if (event == null) {
     console.log("No event found");
   }
@@ -19,7 +20,7 @@ router.get("/oneEvent/:id", async (req, res) => {
 
 // make a new event -> body must contain title, description, eventDate, and image
 router.post("/newEvent", async (req, res, next) => {
-  const event = new Event(req.body);
+  const event = new Events(req.body);
   try {
     await event.save();
     res.send(event);
@@ -31,7 +32,7 @@ router.post("/newEvent", async (req, res, next) => {
 // Edit events for the person that made the event -> based on the id but can be changed to something else later -> look into how the image upload would work
 router.put("/edit/:id", async (req, res) => {
   console.log(req.body);
-  let event = await Event.findOneAndUpdate(
+  let event = await Events.findOneAndUpdate(
     { id: req.params.id },
     {
       title: req.body.title,
@@ -40,7 +41,7 @@ router.put("/edit/:id", async (req, res) => {
       image: req.body.image,
     }
   );
-  event = await Event.findOne({ id: req.params.id });
+  event = await Events.findOne({ id: req.params.id });
   try {
     event.save();
   } catch (e) {
@@ -52,18 +53,33 @@ router.put("/edit/:id", async (req, res) => {
 
 // Approval by the admin for events
 router.put("/admin/edit/:id", async (req, res) => {
-  let event = await Event.findByIdAndUpdate(
-    req.params.id,
+  let event = await Events.findOneAndUpdate(
+    { id: req.params.id },
     {
       adminApproved: true,
-    },
-    function (err, docs) {
-      if (err) console.log(err);
-      else console.log("Updated event ID: ", docs);
     }
   );
+  event = await Events.findOne({ id: req.params.id });
+  try {
+    event.save();
+  } catch (e) {
+    console.log(e);
+  }
+  res.send(event);
+  console.log("success");
 });
 
-// Add delete
+router.delete("/admin/delete/:id", async (req, res) => {
+  try {
+    const event = await Events.findOneAndDelete({
+      id: req.params.id,
+    });
+
+    if (!event) response.status(404).send("No event found");
+    res.status(200).send();
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
 
 module.exports = router;

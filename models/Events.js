@@ -12,6 +12,9 @@ const Events = new mongoose.Schema({
   description: {
     type: String,
   },
+  host: {
+    type: String,
+  },
   createdAt: {
     type: Date,
   },
@@ -19,33 +22,12 @@ const Events = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
-  startTime: {
-    type: Date,
-    required: true,
-  },
-  endTime: {
-    type: Date,
-    required: true,
-  },
   image: {
     data: Buffer,
     contentType: String,
   },
-  currentAttendees: {
-    type: Number,
-    minimum: 0,
-  },
-  maxAttendees: {
-    type: Number,
-    minimum: 0,
-  },
   location: {
     type: String,
-    required: true,
-  },
-  eventPrivacy: {
-    type: Boolean,
-    default: false,
   },
   externalLinks: {
     type: String,
