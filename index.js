@@ -1,6 +1,6 @@
 const express = require("express");
 const app = express();
-let port = 3000;
+let port = process.env.PORT || 3000;
 var cors = require("cors");
 const InclinePrep = require("./routes/InclinePrep");
 const mongoose = require("mongoose");
@@ -15,7 +15,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 mongoose
   .connect(
-    `mongodb+srv://Ben:${password}@cluster0.qtjn2.mongodb.net/${dbname}?retryWrites=true&w=majority`
+    process.env.MONGODB_URI ||
+      `mongodb+srv://Ben:${password}@cluster0.qtjn2.mongodb.net/${dbname}?retryWrites=true&w=majority`
   )
   .then(() => console.log("MongoDB connected"))
   .catch((err) => {
