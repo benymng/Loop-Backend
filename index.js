@@ -31,6 +31,7 @@ app.get("/", (req, res) => {
 
 app.use("/InclinePrep", InclinePrep);
 
-app.listen(port, () => {
-  console.log(`Listening on port ${port}`);
+const server = app.listen(process.env.PORT || 3000, () => {
+  const port = server.address().port;
+  console.log(`Express is working on port ${port}`);
 });
