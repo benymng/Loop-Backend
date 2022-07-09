@@ -13,6 +13,8 @@ const password = process.env.DB_URI_PASSWORD;
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
+app.use(cors());
+
 mongoose
   .connect(
     process.env.MONGODB_URI ||
@@ -22,8 +24,6 @@ mongoose
   .catch((err) => {
     console.log(err);
   });
-
-app.use(cors());
 
 app.get("/", (req, res) => {
   res.send("hello world");
