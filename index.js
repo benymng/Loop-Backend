@@ -26,7 +26,7 @@ mongoose
   });
 
 app.get("/", (req, res) => {
-  res.send("hello world");
+  res.send("Hello World");
 });
 
 app.use("/InclinePrep", InclinePrep);
