@@ -2,6 +2,7 @@ const express = require("express");
 const router = express.Router();
 const Events = require("../models/Events");
 const { response } = require("express");
+const AdminLogin = require("../models/AdminLogin");
 
 // fetch all the events
 router.get("/events", async (req, res) => {
@@ -80,6 +81,24 @@ router.delete("/admin/delete/:id", async (req, res) => {
   } catch (error) {
     res.status(500).send(error);
   }
+});
+
+// Admin
+
+router.post("/login", async (req, res, next) => {
+  const newUser = new AdminLogin(req.body);
+  try {
+    await newUser.save();
+    res.send(newUser);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.get("/admin/:name", async (req, res) => {
+  const user = await AdminLogin.findOne({ name: req.params.name });
+  if (user == null) console.log("Could not find name");
+  res.send(user);
 });
 
 module.exports = router;
