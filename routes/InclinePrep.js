@@ -5,7 +5,7 @@ const { response } = require("express");
 
 // fetch all the events
 router.get("/events", async (req, res) => {
-  const events = await Events.find();
+  const events = await Events.find().sort({ createdAt: -1 });
   res.send(events);
 });
 
