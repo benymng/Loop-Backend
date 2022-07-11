@@ -53,14 +53,14 @@ router.put("/edit/:id", async (req, res) => {
 });
 
 // Approval by the admin for events
-router.put("/admin/edit/:id", async (req, res) => {
+router.put("/admin/edit/:slug", async (req, res) => {
   let event = await Events.findOneAndUpdate(
-    { id: req.params.id },
+    { slug: req.params.slug },
     {
       adminApproved: true,
     }
   );
-  event = await Events.findOne({ id: req.params.id });
+  event = await Events.findOne({ slug: req.params.slug });
   try {
     event.save();
   } catch (e) {
