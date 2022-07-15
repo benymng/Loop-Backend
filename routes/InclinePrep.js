@@ -11,8 +11,8 @@ router.get("/events", async (req, res) => {
 });
 
 // fetch a single event based on the id
-router.get("/oneEvent/:id", async (req, res) => {
-  const event = await Events.findOne({ id: req.params.id });
+router.get("/oneEvent/:slug", async (req, res) => {
+  const event = await Events.findOne({ slug: req.params.slug });
   if (event == null) {
     console.log("No event found");
   }
