@@ -70,10 +70,10 @@ router.put("/admin/edit/:slug", async (req, res) => {
   console.log("success");
 });
 
-router.delete("/admin/delete/:id", async (req, res) => {
+router.delete("/admin/delete/:slug", async (req, res) => {
   try {
     const event = await Events.findOneAndDelete({
-      id: req.params.id,
+      slug: req.params.slug,
     });
 
     if (!event) response.status(404).send("No event found");
