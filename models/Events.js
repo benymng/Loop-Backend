@@ -40,6 +40,9 @@ const Events = new mongoose.Schema({
   category: {
     type: String,
   },
+  emoji: {
+    type: String,
+  },
 });
 
 Events.pre("validate", function (next) {
