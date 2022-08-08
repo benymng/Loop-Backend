@@ -42,6 +42,10 @@ const Events = new mongoose.Schema({
   emoji: {
     type: String,
   },
+  peopleGoing: {
+    type: Number,
+    default: 0,
+  },
 });
 
 Events.pre("validate", function (next) {
