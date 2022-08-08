@@ -101,4 +101,21 @@ router.get("/admin/:name", async (req, res) => {
   res.send(user);
 });
 
+router.put("/interested/:slug", async (req, res) => {
+  let event = await Events.findOneAndUpdate(
+    { slug: req.params.slug },
+    {
+      $inc: { peopleGoing: 1 },
+    }
+  );
+  event = await Events.findOne({ slug: req.params.slug });
+  try {
+    event.save();
+  } catch (e) {
+    console.log(e);
+  }
+  res.send(event);
+  console.log("success");
+});
+
 module.exports = router;
