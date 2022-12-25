@@ -129,4 +129,9 @@ router.post("/userInterests", async (req, res) => {
   }
 });
 
+router.get("/userInterests", async (req, res) => {
+  const events = await UserInterests.find().sort({ createdAt: 1 });
+  res.send(events);
+});
+
 module.exports = router;
