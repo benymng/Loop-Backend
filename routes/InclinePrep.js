@@ -3,6 +3,7 @@ const router = express.Router();
 const Events = require("../models/Events");
 const { response } = require("express");
 const AdminLogin = require("../models/AdminLogin");
+const UserInterests = require("../models/UserInterests");
 
 // fetch all the events
 router.get("/events", async (req, res) => {
@@ -116,6 +117,16 @@ router.put("/interested/:slug", async (req, res) => {
   }
   res.send(event);
   console.log("success");
+});
+
+router.post("/userInterests", async (req, res) => {
+  const newInterest = new UserInterests(req.body);
+  try {
+    await newInterest.save();
+    res.send(newInterest);
+  } catch (error) {
+    res.status(500).send(error);
+  }
 });
 
 module.exports = router;
