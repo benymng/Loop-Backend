@@ -6,6 +6,14 @@ const InclinePrep = require("./routes/InclinePrep");
 const mongoose = require("mongoose");
 require("dotenv").config();
 const bodyParser = require("body-parser");
+const Document = require("./models/Document");
+const server = require('http').createServer(app);
+const io = require('socket.io')(server, {
+  cors: {
+    origin: '*',
+    methods: ["GET", "POST"]
+  }
+});
 
 const dbname = "inclinePrep";
 const password = process.env.DB_URI_PASSWORD;
@@ -34,9 +42,35 @@ app.get("/", (req, res) => {
   res.send("Hello World");
 });
 
+io.on('connection', async (socket) => {
+  console.log('a user connected');
+  socket.on('get-document', async (documentId) => {
+    const document = await findOrCreateDocument(documentId);
+    socket.join(documentId);
+    socket.emit('load-document', document.data);
+
+    socket.on('send-changes', (delta) => {
+      socket.broadcast.to(delta.document).emit('receive-changes', delta);
+    });
+
+    socket.on('save-document', async (data) => {
+      console.log('save')
+      console.log(data)
+      await Document.findByIdAndUpdate(documentId, { data } );
+    });
+  });
+});
+
 app.use("/InclinePrep", InclinePrep);
 
-const server = app.listen(process.env.PORT || 3001, () => {
+const findOrCreateDocument = async (id) => {
+  if (id == null) return;
+  const document = await Document.findById(id);
+  if (document) return document;
+  return await Document.create({ _id: id, data: "" });
+}
+
+server.listen(process.env.PORT || 3001, () => {
   const port = server.address().port;
   console.log(`Express is working on port ${port}`);
 });

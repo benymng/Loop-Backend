@@ -4,7 +4,7 @@ const mongoose = require("mongoose");
 
 // todo: find way to make event recurring, add tags (making array of interests?), number of attendees,
 
-const Events = new mongoose.Schema({
+const StudentBulletin = new mongoose.Schema({
   title: {
     type: String,
     required: true,
@@ -17,15 +17,6 @@ const Events = new mongoose.Schema({
   },
   createdAt: {
     type: Date,
-    default: Date.now,
-  },
-  startTime: {
-    type: Date,
-    required: true,
-  },
-  endTime: {
-    type: Date,
-    required: true,
   },
   adminApproved: {
     type: Boolean,
@@ -42,8 +33,8 @@ const Events = new mongoose.Schema({
   },
   slug: {
     type: String,
-    // required: true,
-    // unique: true,
+    required: true,
+    unique: true,
   },
   category: {
     type: String,
@@ -57,11 +48,11 @@ const Events = new mongoose.Schema({
   },
 });
 
-Events.pre("validate", function (next) {
+StudentBulletin.pre("validate", function (next) {
   if (this.title) {
     this.slug = slugify(this.title, { lower: true, strict: true });
   }
   next();
 });
 
-module.exports = mongoose.model("Events", Events);
+module.exports = mongoose.model("StudentBulletin", StudentBulletin);

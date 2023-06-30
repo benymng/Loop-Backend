@@ -4,46 +4,31 @@ const mongoose = require("mongoose");
 
 // todo: find way to make event recurring, add tags (making array of interests?), number of attendees,
 
-const Events = new mongoose.Schema({
-  title: {
+const Clubs = new mongoose.Schema({
+  clubName: {
     type: String,
     required: true,
   },
   description: {
     type: String,
   },
-  host: {
-    type: String,
-  },
-  createdAt: {
-    type: Date,
-    default: Date.now,
-  },
-  startTime: {
-    type: Date,
-    required: true,
-  },
-  endTime: {
-    type: Date,
-    required: true,
+  leaderID: {
+    type: Array,
   },
   adminApproved: {
     type: Boolean,
     default: false,
   },
-  image: {
-    type: String,
-  },
   location: {
     type: String,
   },
   externalLinks: {
-    type: String,
+    type: Array,
   },
   slug: {
     type: String,
-    // required: true,
-    // unique: true,
+    required: true,
+    unique: true,
   },
   category: {
     type: String,
@@ -51,17 +36,16 @@ const Events = new mongoose.Schema({
   emoji: {
     type: String,
   },
-  peopleGoing: {
-    type: Number,
-    default: 0,
+  meetingTime: {
+    type: String,
   },
 });
 
-Events.pre("validate", function (next) {
-  if (this.title) {
-    this.slug = slugify(this.title, { lower: true, strict: true });
+Clubs.pre("validate", function (next) {
+  if (this.clubName) {
+    this.slug = slugify(this.clubName, { lower: true, strict: true });
   }
   next();
 });
 
-module.exports = mongoose.model("Events", Events);
+module.exports = mongoose.model("Clubs", Clubs);

@@ -12,8 +12,8 @@ router.get("/events", async (req, res) => {
 });
 
 // fetch a single event based on the id
-router.get("/oneEvent/:slug", async (req, res) => {
-  const event = await Events.findOne({ slug: req.params.slug });
+router.get("/oneEvent/:id", async (req, res) => {
+  const event = await Events.findById(req.params.id);
   if (event == null) {
     console.log("No event found");
   }
@@ -54,14 +54,11 @@ router.put("/edit/:id", async (req, res) => {
 });
 
 // Approval by the admin for events
-router.put("/admin/edit/:slug", async (req, res) => {
-  let event = await Events.findOneAndUpdate(
-    { slug: req.params.slug },
-    {
-      adminApproved: true,
-    }
-  );
-  event = await Events.findOne({ slug: req.params.slug });
+router.put("/admin/edit/:id", async (req, res) => {
+  let event = await Events.findByIdAndUpdate(req.params.id, {
+    adminApproved: true,
+  });
+  event = await Events.findById(req.params.id);
   try {
     event.save();
   } catch (e) {
@@ -71,11 +68,9 @@ router.put("/admin/edit/:slug", async (req, res) => {
   console.log("success");
 });
 
-router.delete("/admin/delete/:slug", async (req, res) => {
+router.delete("/admin/delete/:id", async (req, res) => {
   try {
-    const event = await Events.findOneAndDelete({
-      slug: req.params.slug,
-    });
+    const event = await Events.findByIdAndDelete(req.params.id);
 
     if (!event) response.status(404).send("No event found");
     res.status(200).send();
@@ -102,14 +97,11 @@ router.get("/admin/:name", async (req, res) => {
   res.send(user);
 });
 
-router.put("/interested/:slug", async (req, res) => {
-  let event = await Events.findOneAndUpdate(
-    { slug: req.params.slug },
-    {
-      $inc: { peopleGoing: 1 },
-    }
-  );
-  event = await Events.findOne({ slug: req.params.slug });
+router.put("/interested/:id", async (req, res) => {
+  let event = await Events.findByIdAndUpdate(req.params.id, {
+    $inc: { peopleGoing: 1 },
+  });
+  event = await Events.findById(req.params.id);
   try {
     event.save();
   } catch (e) {
@@ -132,6 +124,36 @@ router.post("/userInterests", async (req, res) => {
 router.get("/userInterests", async (req, res) => {
   const events = await UserInterests.find().sort({ createdAt: 1 });
   res.send(events);
+});
+
+// fetch a single event based on the id
+router.get("/userInterests/:uid", async (req, res) => {
+  const userInfo = await UserInterests.findOne({ userId: req.params.uid });
+  if (userInfo == null) {
+    console.log("No user found");
+  }
+  res.send(userInfo);
+});
+
+router.get("/clubs", async (req, res) => {
+  const clubs = await Clubs.find().sort({ name: 1 });
+  res.send(clubs);
+});
+
+router.post("/newClub", async (req, res) => {
+  const newClub = new Clubs(req.body);
+  try {
+    await newClub.save();
+    res.send(newClub);
+  } catch (error) {
+    res.status(500).send(error);
+  }
+});
+
+router.get("/clubs/:clubName", async (req, res) => {
+  const club = await Clubs.findOne({ clubName: req.params.clubName });
+  if (club == null) console.log("Could not find club");
+  res.send(club);
 });
 
 module.exports = router;
