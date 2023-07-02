@@ -11,8 +11,11 @@ const server = require('http').createServer(app);
 const io = require('socket.io')(server, {
   cors: {
     origin: '*',
-    methods: ["GET", "POST"]
-  }
+    methods: ["GET", "POST"],
+    transport: ['websocket', 'polling'],
+    credentials: true,
+  },
+  allowEIO3: true
 });
 
 const dbname = "inclinePrep";
@@ -30,7 +33,7 @@ app.use(function (req, res, next) {
 
 mongoose
   .connect(
-    process.env.MONGODB_URI ||
+    process.env.DATABASE_URL ||
       `mongodb+srv://Ben:${password}@cluster0.qtjn2.mongodb.net/${dbname}?retryWrites=true&w=majority`
   )
   .then(() => console.log("MongoDB connected"))
