@@ -4,6 +4,8 @@ const Events = require("../models/Events");
 const { response } = require("express");
 const AdminLogin = require("../models/AdminLogin");
 const UserInterests = require("../models/UserInterests");
+const { Configuration, OpenAIApi } = require("openai");
+const Clubs = require("../models/Clubs");
 
 // fetch all the events
 router.get("/events", async (req, res) => {
@@ -155,5 +157,47 @@ router.get("/clubs/:clubName", async (req, res) => {
   if (club == null) console.log("Could not find club");
   res.send(club);
 });
+
+router.post("/chatgpt/search", async (req, res) => {
+  const getCondensedEvents = async () => {
+    const events = await Events.find({
+      createdAt: {
+        $gte: new Date(Date.now()),
+      },
+      adminApproved: true,
+    }).sort({ createdAt: 1 });
+    const combinedList = events.map(event => {
+      return `eventName: ${event.title}, description: ${event.description}, #peopleGoing ${event.peopleGoing}, eventId: ${event._id}\n`;
+    });
+    return combinedList;
+  };
+
+  const condensedEvents = await getCondensedEvents();
+  const configuration = new Configuration({
+    apiKey: process.env.OPENAI_API_KEY,
+  });
+  const question = req.body.question;
+  const openai = new OpenAIApi(configuration);
+  const prompt = `Create an array of the events (max of 5) which match the search bar prompt:"${question}" formatted as an array of eventIds based on this event data: \n ${condensedEvents}`
+  try {
+    if (prompt == null) {
+      throw new Error("no prompt was provided");
+    }
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [
+        {
+          role: "user",
+          content: prompt,
+          // max_tokens: 500,
+        },
+      ],
+    });
+    const completion = response.data.choices[0].message.content;
+    res.send(completion);
+  } catch (error) {
+    console.log(error);
+  }
+})
 
 module.exports = router;
